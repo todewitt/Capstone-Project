@@ -1,5 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Withdraw-Deposit{% endblock %}
 {% block content %}
-<h1>Withdraw</h1>
-{% endblock % }
+<h1 class="text-white">Withdraw and Deposit Cash</h1>
+<p class="text-white">This is where someone will be able to deposit cash, they will be able to select an account, and then select where the money is going, and then how much<br>
+Since we are not using real money this can be done with a simple form</p>
+<select class="form-select" aria-label="Default select example">
+  <option selected>Select Account</option>
+  <option value="1">Stock account</option>
+  <option value="2">Bank account</option>
+</select>
+<p class="text-white text-center">There will be an arrow showing direction of transfer here</p>
+<select class="form-select" aria-label="Default select example">
+  <option selected>Select Account</option>
+  <option value="1">Stock account</option>
+  <option value="2">Bank account</option>
+</select>
+<div class="input-group mb-3">
+  <span class="input-group-text">$</span>
+  <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+  <span class="input-group-text">.00</span>
+</div>
+{% endblock %}

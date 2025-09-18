@@ -1,5 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Order-History{% endblock %}
 {% block content %}
-<h1>Order History</h1>
-{% endblock % }
+<h1 class="text-white">Order History</h1>
+<p class="text-white">This is just an example of a table that we will have to display the order history for an account, we can add extra rows for as many orders and add more collums for more information</p>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Account Number</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Other important info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>1209</td>
+      <td>12</td>
+      <td>info</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>2939</td>
+      <td>3</td>
+      <td>info</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>1245</td>
+      <td>34</td>
+      <td>info</td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

@@ -26,7 +26,7 @@ def logout():
 def orderHistory():
     return render_template("order-history.html")
 
-@app.route("/withdraw-deposit.html")
+@app.route("/withdraw-deposit")
 def withdrawDeposit():
     return render_template("withdraw-deposit.html")
 
