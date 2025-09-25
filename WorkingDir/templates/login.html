@@ -2,7 +2,8 @@
 {% block title %}Login{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-white">Login</h1>
+    <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Stock Simulation Logo" height="500" class="d-block mx-auto">
+    <h1 class="text-white text-center">Login</h1>
     
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -11,7 +12,6 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    
     <form method="POST" action="{{ url_for('login') }}">
         <div class="mb-3">
             <label for="username" class="form-label text-white">Username</label>
