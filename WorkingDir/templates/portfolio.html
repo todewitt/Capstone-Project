@@ -15,7 +15,6 @@
         </thead>
         <tbody>
             {% for symbol, quantity in holdings.items() %}
-                {# Only display stocks the user currently owns #}
                 {% if quantity > 0 %}
                 <tr>
                     <td>{{ symbol }}</td>
