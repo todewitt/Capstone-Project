@@ -12,15 +12,15 @@ def dashboard():
 
 @app.route("/about")
 def about():
-    return render_template("about.html") #route for about.html
+    return render_template("about.html") 
 
 @app.route("/contact")
 def contact():
-    return render_template("contact.html") #route for contact.html
+    return render_template("contact.html") 
 
 @app.route("/account")
 def account():
-    return render_template("account.html") #route for account.html
+    return render_template("account.html")
 
 @app.route("/log-out")
 def logout():
