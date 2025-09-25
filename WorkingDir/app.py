@@ -78,7 +78,7 @@ class Order(db.Model):
     price_per_share = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     def __repr__(self):
-        return f""
+        return f"Order('{self.stock_symbol}', '{self.timestamp}')"
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -88,7 +88,7 @@ class Stock(db.Model):
     quantity = db.Column(db.Float, nullable=False)
 
     def __repr__(self):
-        return f""
+        return f"Stock('{self.stock_symbol}', '{self.price_per_share}', '{self.quantity}')"
     
 # Create tables
 with app.app_context():
