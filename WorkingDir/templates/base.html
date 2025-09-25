@@ -11,14 +11,16 @@
     <nav class="navbar bg-#171717 border-bottom border-body" data-bs-theme="dark">
     <nav class="navbar navbar-expand-lg border-bottom" style="background-color: #ffffff;"></nav>
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Stock Simulation</a>
+    <a class="navbar-brand" href="#">
+      <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Stock Simulation Logo" height="50" class="d-inline-block align-top">
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
+          <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}">Dashboard</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('about') }}">About</a>
@@ -31,8 +33,10 @@
             Account
           </a>
           <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('portfolio') }}">My Portfolio</a></li>
             <li><a class="dropdown-item" href="{{ url_for('orderHistory') }}">Order History</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('withdrawDeposit') }}">Withdraw/Deoposit</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('withdrawDeposit') }}">Withdraw/Deposit</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('edit_stocks') }}">Edit Stocks</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{{ url_for('logout') }}">log out</a></li>
           </ul>

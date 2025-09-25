@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Stock Simulation Logo" height="500" class="d-block mx-auto">
+    <h1 class="text-white text-center">Login</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="mb-3">
+            <label for="username" class="form-label text-white">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label text-white">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    
+    <div class="mt-4">
+        <p class="text-white">Don't have an account?</p>
+        <a href="{{ url_for('create_account') }}" class="btn btn-secondary">Create One</a>
+    </div>
+</div>
+{% endblock %}
