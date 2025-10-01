@@ -10,9 +10,9 @@ def login():
 def dashboard():
     return render_template("dashboard.html")
 
-@app.route("/about")
-def about():
-    return render_template("about.html") 
+@app.route("/buy_sell")
+def buy_sell():
+    return render_template("buy_sell.html") 
 
 @app.route("/contact")
 def contact():
@@ -141,6 +141,38 @@ def edit_stocks():
     
     return render_template('edit-stocks.html')
 
+@app.route('/sell', methods=['GET', 'POST'])
+def sell():
+    if request.method == 'POST':
+        stock_symbol = request.form['stock_symbol'].upper()
+        quantity = int(request.form['quantity'])
+        price_per_share = float(request.form['price_per_share'])
+        user_id = db.session['user_id']
+
+        user = User.query.get(user_id)
+        if not user:
+            flash('User not found.', 'error')
+            return redirect(url_for('sell'))
+            
+        try:
+            new_order = Order(
+                user_id=user.id,
+                stock_symbol=stock_symbol,
+                order_type='SELL',
+                quantity=quantity,
+                price_per_share=price_per_share,
+                timestamp=datetime.datetime.now() )
+            
+            db.session.add(new_order)
+            db.session.commit()
+            flash('Sell order placed successfully!', 'success')
+            return redirect(url_for('portfolio'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error placing sell order: {str(e)}', 'error')
+            return redirect(url_for('sell'))
+
+    return render_template('sell.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
