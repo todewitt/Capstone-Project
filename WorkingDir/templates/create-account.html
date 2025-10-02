@@ -15,12 +15,24 @@
        
         <form method="POST" action="{{ url_for('create_account') }}">
             <div class="mb-3">
+                <label for="firstName" class="form-label text-white">First Name</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" required>
+            </div>
+            <div class="mb-3">
+                <label for="lastName" class="form-label text-white">Last Name</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" required>
+            </div>
+            <div class="mb-3">
                 <label for="username" class="form-label text-white">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label text-white">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label text-white">Password</label>
+                <input type="text" class="form-control" id="password" name="password" required>
             </div>
             <button type="submit" class="btn btn-primary">Create Account</button>
             <a href="{{ url_for('create_account') }}" class="btn btn-secondary">Cancel</a>

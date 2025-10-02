@@ -3,8 +3,31 @@
 {% block content %}
 
 <h1 class="text-white">Dashboard</h1>
-<h2 class="text-white">This is the start of group 11's stock simulation project</h2>
-<p class="text-white">A lot of work still need to be done, specifically on the design and looks. <br>Eventually this page will look fantastic, this was just to prove that we have a start
-    and have templates set up for the project<br> As you can see this is the home page and eventually there will be stocks displayed here, for now however navigate using the bar in the top right
-</p>
+<div class="mt-4">
+    <h3 class="text-white">Available Stocks</h3>
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Company Name</th>
+                <th>Price</th>
+                <th>Available</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.stock_symbol }}</td>
+                <td>{{ stock.name }}</td>
+                <td>${{ "%.2f"|format(stock.price_per_share) }}</td>
+                <td>{{ stock.quantity }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">No stocks available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

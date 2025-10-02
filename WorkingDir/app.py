@@ -16,6 +16,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    firstName = db.Column(db.String(120), nullable=False)
+    lastName = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(120), nullable=False)
 
     orders = db.relationship('Order', backref='user', lazy=True)
 
@@ -55,7 +58,8 @@ def login():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    stocks = Stock.query.all()
+    return render_template("dashboard.html", stocks=stocks)
 
 @app.route("/buy_sell")
 def buy_sell():
@@ -206,13 +210,16 @@ def create_account():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        password = request.form['password']
         
-        if not username or not email:
+        if not username or not email or not firstName or not lastName or not password:
             flash('Please fill in all fields', 'error')
             return redirect(url_for('create_account'))
         
         try:
-            new_user = User(username=username, email=email)
+            new_user = User(username=username, email=email, firstName=firstName, lastName=lastName, password=password)
             db.session.add(new_user)
             db.session.commit()
             flash('User added successfully!', 'success')
