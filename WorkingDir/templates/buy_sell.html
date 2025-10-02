@@ -1,11 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Buy_Sell{% endblock %}
+{% block title %}Buy/Sell{% endblock %}
 {% block content %}
-<h1 class="text-white">BUY/SELL</h1>
-<h2 class="text-white">This is the place where all the fun happens!</h2>
-<p class="text-white">This is a application designed to help teach you all about buying and selling stocks <br> If you have a general question about buying and selling stocks 
-    we have plenty of resources for you down below (have links to stock articles and videos)<br>
-    We also have a great FaQ if you are having troubles navigating or using the applicaiton! <br>
-    If you are encountering an unexpected error, please go to the contact page and send us an email about the problem!
-</p>
+<h1 class="text-white">Buy/Sell Stocks</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card bg-dark text-white p-4 mb-4">
+            <h3 class="mb-3">Buy Stocks</h3>
+            <form method="POST" action="{{ url_for('buy') }}">
+                <div class="mb-3">
+                    <label for="buy_symbol" class="form-label">Stock Symbol</label>
+                    <input type="text" class="form-control" id="buy_symbol" name="stock_symbol" required>
+                </div>
+                <div class="mb-3">
+                    <label for="buy_quantity" class="form-label">Number of Shares</label>
+                    <input type="number" class="form-control" id="buy_quantity" name="quantity" min="1" step="1" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Buy</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card bg-dark text-white p-4 mb-4">
+            <h3 class="mb-3">Sell Stocks</h3>
+            <form method="POST" action="{{ url_for('sell') }}">
+                <div class="mb-3">
+                    <label for="sell_symbol" class="form-label">Stock Symbol</label>
+                    <input type="text" class="form-control" id="sell_symbol" name="stock_symbol" required>
+                </div>
+                <div class="mb-3">
+                    <label for="sell_quantity" class="form-label">Number of Shares</label>
+                    <input type="number" class="form-control" id="sell_quantity" name="quantity" min="1" step="1" required>
+                </div>
+                <button type="submit" class="btn btn-danger w-100">Sell</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3 class="text-white">Available Stocks</h3>
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Company Name</th>
+                <th>Price</th>
+                <th>Available</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.stock_symbol }}</td>
+                <td>{{ stock.name }}</td>
+                <td>${{ "%.2f"|format(stock.price_per_share) }}</td>
+                <td>{{ stock.quantity }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">No stocks available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
