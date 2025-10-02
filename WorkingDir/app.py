@@ -29,6 +29,7 @@ class Order(db.Model):
     order_type = db.Column(db.String(4), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     
     def __repr__(self):
         return f"<Order {self.order_type} {self.quantity} {self.stock_symbol}>"
@@ -66,6 +67,10 @@ def buy():
     stock_symbol = request.form['stock_symbol'].upper()
     quantity = int(request.form['quantity'])
     user_id = 1  # Hardcoded for now. Replace with session['user_id'] when log in is added
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('buy_sell'))
     
     # Check if stock exists
     stock = Stock.query.filter_by(stock_symbol=stock_symbol).first()
@@ -85,6 +90,7 @@ def buy():
             order_type='BUY',
             quantity=quantity,
             price_per_share=stock.price_per_share,  # Use current stock price
+
         )
         
         # Update stock quantity
@@ -179,17 +185,21 @@ def portfolio():
             assets[order.stock_symbol] = assets.get(order.stock_symbol, 0) + order.quantity
         elif order.order_type == 'SELL':
             assets[order.stock_symbol] = assets.get(order.stock_symbol, 0) - order.quantity
-    
+    holdings = {}
+    total_portfolio_value = 0.0
     # Get current stock prices
-    stocks = {}
-    for symbol in assets.keys():
-        stock = Stock.query.filter_by(stock_symbol=symbol).first()
-        if stock:
-            stocks[symbol] = stock.price_per_share
-        else:
-            stocks[symbol] = 0.0
+    for symbol, quantity in assets.items():
+        if quantity > 0:
+            stock = Stock.query.filter_by(stock_symbol=symbol).first()
+            if stock:
+                current_price = stock.price_per_share
+            else:
+                current_price = 0.0
+            total_value = quantity * current_price
+            holdings[symbol] = { 'quantity': quantity, 'current_price': current_price, 'total_value': total_value }
+            total_portfolio_value += total_value
     
-    return render_template("portfolio.html", assets=assets, stocks=stocks)
+    return render_template("portfolio.html", holdings=holdings, total_portfolio_value=total_portfolio_value)
 
 @app.route('/create-account', methods=['GET', 'POST'])
 def create_account():
