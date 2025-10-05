@@ -86,7 +86,7 @@ def buy_sell():
 def buy():
     stock_symbol = request.form['stock_symbol'].upper()
     quantity = int(request.form['quantity'])
-    user_id = 1  # Hardcoded for now. Replace with session['user_id'] when log in is added
+    user_id = session['user_id']
     user = User.query.get(user_id)
     if not user:
         flash('User not found.', 'error')
@@ -194,12 +194,20 @@ def withdrawDeposit():
 
 @app.route('/order-history')
 def orderHistory():
-    user = User.query.get_or_404(1)
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
     return render_template('order-history.html', user=user)
 
 @app.route('/portfolio')
 def portfolio():
-    user = User.query.get_or_404(1)
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
     assets = {}
     for order in user.orders:
         if order.order_type == 'BUY':
