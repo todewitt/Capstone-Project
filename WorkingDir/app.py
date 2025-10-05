@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash 
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import datetime
 from flask_sqlalchemy import SQLAlchemy
 
@@ -54,7 +54,23 @@ with app.app_context():
 # ROUTES
 @app.route("/", methods=['GET', 'POST'])
 def login():
-    return render_template("login.html")
+    #Check if user sumitted something and store the username and password provided by user then quesries User to find the
+    #first user those variable
+     if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = User.query.filter_by(username=username, password=password).first()
+        #If user exist store their id and move them to dashboard if not redirect them to login.
+        if user:
+            session['user_id'] = user.id
+            flash('Login successful!', 'Success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password', 'error')
+            return redirect(url_for('login'))
+        
+     return render_template("login.html")
 
 @app.route("/dashboard")
 def dashboard():
@@ -113,8 +129,7 @@ def buy():
 def sell():
     stock_symbol = request.form['stock_symbol'].upper()
     quantity = int(request.form['quantity'])
-    user_id = 1  # Hardcoded for now. Replace with session['user_id'] when log in is added
-
+    user_id = session['user_id']
     user = User.query.get(user_id)
     if not user:
         flash('User not found.', 'error')
@@ -169,6 +184,8 @@ def account():
 
 @app.route("/log-out")
 def logout():
+    session.pop('user_id', None)
+    flash('Logout Successfull')
     return redirect(url_for('login'))
 
 @app.route("/withdraw-deposit")
