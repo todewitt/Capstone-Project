@@ -194,20 +194,20 @@ def withdrawDeposit():
 
 @app.route('/order-history')
 def orderHistory():
-    user_id = session['user_id']
-    user = User.query.get(user_id)
-    if not user:
+    user_id = session.get('user_id')
+    if not user_id:
         flash('User not found.', 'error')
         return redirect(url_for('login'))
+    user = User.query.get_or_404(user_id)
     return render_template('order-history.html', user=user)
 
 @app.route('/portfolio')
 def portfolio():
-    user_id = session['user_id']
-    user = User.query.get(user_id)
-    if not user:
+    user_id = session.get('user_id')
+    if not user_id:
         flash('User not found.', 'error')
         return redirect(url_for('login'))
+    user = User.query.get_or_404(user_id)
     assets = {}
     for order in user.orders:
         if order.order_type == 'BUY':
