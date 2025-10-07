@@ -19,6 +19,7 @@ class User(db.Model):
     firstName = db.Column(db.String(120), nullable=False)
     lastName = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    admin = db.Columb(db.String(2))
 
     orders = db.relationship('Order', backref='user', lazy=True)
 
@@ -238,13 +239,14 @@ def create_account():
         firstName = request.form['firstName']
         lastName = request.form['lastName']
         password = request.form['password']
+        admin = request.form['admin']
         
         if not username or not email or not firstName or not lastName or not password:
             flash('Please fill in all fields', 'error')
             return redirect(url_for('create_account'))
         
         try:
-            new_user = User(username=username, email=email, firstName=firstName, lastName=lastName, password=password)
+            new_user = User(username=username, email=email, firstName=firstName, lastName=lastName, password=password, admin=admin)
             db.session.add(new_user)
             db.session.commit()
             flash('User added successfully!', 'success')
