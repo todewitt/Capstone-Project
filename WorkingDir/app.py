@@ -19,7 +19,7 @@ class User(db.Model):
     firstName = db.Column(db.String(120), nullable=False)
     lastName = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    admin = db.Columb(db.String(2))
+    admin = db.Column(db.String(2))
 
     orders = db.relationship('Order', backref='user', lazy=True)
 
