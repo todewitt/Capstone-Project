@@ -259,6 +259,16 @@ def create_account():
 
 @app.route("/edit-stocks", methods=['GET', 'POST'])
 def edit_stocks():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Please log in with an admin account.', 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.get(user_id)
+    if user.admin != 'y':
+        flash('User is not logged in as an admin.', 'error')
+        return redirect(url_for('dashboard'))
+    
     if request.method == 'POST':
         stock_symbol = request.form['stock_symbol'].upper()
         name = request.form['name']
