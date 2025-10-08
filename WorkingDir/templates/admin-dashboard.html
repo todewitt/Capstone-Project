@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-white">Edit Stocks</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+       <div class="card bg-dark text-white p-4 mb-4">
+        <h3 class="mb-3">Change Todays Hours ({{ today_string }})</h3>
+        <form method="POST" action="{{ url_for('admin_dashboard') }}">
+            <div class="row align-items-end">
+                <div class="col">
+                    <label for="override_open_time" class="form-label">Open Time</label>
+                    <input type="time" name="override_open_time" class="form-control" 
+                           value="{{ todays_override.open_time.strftime('%H:%M') if todays_override else '09:30' }}">
+                </div>
+                <div class="col">
+                    <label for="override_close_time" class="form-label">Close Time</label>
+                    <input type="time" name="override_close_time" class="form-control" 
+                           value="{{ todays_override.close_time.strftime('%H:%M') if todays_override else '16:00' }}">
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_closed_today" value="1" id="is_closed_today"
+                               {% if todays_override and todays_override.open_time == todays_override.close_time %}checked{% endif %}>
+                        <label class="form-check-label" for="is_closed_today">
+                            Force Closed Today
+                        </label>
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="submit" name="manual_override" class="btn btn-success w-100">Set Today's Hours</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card bg-dark text-white p-4">
+                <h3 class="mb-3">Add New Stock</h3>
+                <form method="POST" action="{{ url_for('admin_dashboard') }}">
+                    <div class="mb-3">
+                        <label for="symbol" class="form-label">Ticker</label>
+                        <input type="text" class="form-control" id="symbol" name="stock_symbol" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price per Share </label>
+                        <input type="number" step="0.01" class="form-control" id="price" name="price_per_share" required>
+                    </div>
+                     <div class="mb-3">
+                        <label for="price" class="form-label">Quantity</label>
+                        <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" required>
+                    </div>
+                    <button type="submit" name="add_stock" class="btn btn-primary w-100">Add Stock</button>
+                </form>
+                
+            </div>
+        </div>
+        <div class="col-md-7">
+    <div class="card bg-dark text-white p-4">
+        <h3 class="mb-3">Set Market Schedule</h3>
+        <form method="POST" action="{{ url_for('admin_dashboard') }}">
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Market Open</th>
+                        <th>Open Time</th>
+                        <th>Close Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(7) %}
+                    <tr>
+                        <td>{{ days[i] }}</td>
+                        <td>
+                            <input type="checkbox" name="is_open_{{ i }}" value="1" 
+                            {% if schedule_dict.get(i) and schedule_dict[i].open_time != schedule_dict[i].close_time %}checked{% endif %}>
+                        </td>
+                        <td>
+                            <input type="time" name="open_time_{{ i }}" class="form-control" 
+                            value="{{ schedule_dict[i].open_time.strftime('%H:%M') if schedule_dict.get(i) else '09:30' }}">
+                        </td>
+                        <td>
+                            <input type="time" name="close_time_{{ i }}" class="form-control" 
+                            value="{{ schedule_dict[i].close_time.strftime('%H:%M') if schedule_dict.get(i) else '16:00' }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+            <button type="submit" name="update_schedule" class="btn btn-success w-100">Update Schedule</button>
+        </form>
+    </div>
+</div>
+    </div>
+</div>
+{% endblock %}
