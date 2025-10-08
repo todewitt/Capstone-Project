@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import datetime
+import datetime, pytz
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -52,6 +52,16 @@ class Stock(db.Model):
 with app.app_context():
     db.create_all()
 
+# Function sets a time zone, defines when Market starts and ends. 
+def is_market_open():
+    tz = pytz.timezone('US\Eastern')
+    time_now = datetime.datetime.now(tz)
+    start_market = now.replace(hour=9, minute=0, second=0, microsecond=0)
+    end_market = now.replace(hour=16, minute=0, second=0, microsecond=0)
+# Checks if current time is within the Weekdays and within 9am to 4pm
+    if 0 <= now.weekday() <= 4 and start_market <= now <= end_market:
+        return True
+    return False    
 # ROUTES
 @app.route("/", methods=['GET', 'POST'])
 def login():
@@ -85,6 +95,10 @@ def buy_sell():
 
 @app.route('/buy', methods=['POST'])
 def buy():
+    if not is_market_open():
+        flash('The Market is closed at the moment.' \
+        'Plese Try your Purchase again during Monday - Friday from 9am - 4pm.')
+        return redirect(url_for('buy_sell'))
     stock_symbol = request.form['stock_symbol'].upper()
     quantity = int(request.form['quantity'])
     user_id = session['user_id']
@@ -128,6 +142,11 @@ def buy():
 
 @app.route('/sell', methods=['POST'])
 def sell():
+    if not is_market_open():
+
+        flash('The Market is closed at the moment.' \
+        'Plese Try your Se again during Monday - Friday from 9am - 4pm.')
+        return redirect(url_for('buy_sell'))
     stock_symbol = request.form['stock_symbol'].upper()
     quantity = int(request.form['quantity'])
     user_id = session['user_id']
