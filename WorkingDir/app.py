@@ -120,7 +120,7 @@ def buy_sell():
 def buy():
     if not is_market_open():
         flash('The Market is closed at the moment.'\
-        'Please Try again later.')
+        'Please Try again later.', 'danger')
         return redirect(url_for('buy_sell'))
     stock_symbol = request.form['stock_symbol'].upper()
     quantity = int(request.form['quantity'])
@@ -370,7 +370,7 @@ def admin_dashboard():
             else:
                 override.open_time = datetime.datetime.strptime(open_time_str, '%H:%M').time()
                 override.close_time = datetime.datetime.strptime(close_time_str, '%H:%M').time()
-                flash('Regular hours have been overridden')
+                flash('Regular hours have been overridden', 'danger')
 
         db.session.commit()
         return redirect(url_for('admin_dashboard'))
