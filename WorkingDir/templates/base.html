@@ -10,26 +10,28 @@
     <body style="background-color: #171717"></body>
 
     {% block navbar %}
-    <nav class="navbar bg-#171717 border-bottom border-body" data-bs-theme="dark">
-    <nav class="navbar navbar-expand-lg border-bottom" style="background-color: #ffffff;"></nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
       <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Stock Simulation Logo" height="50" class="d-inline-block align-top">
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavCenter" aria-controls="navbarNavCenter" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNavCenter">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('buy_sell') }}">Buy_Sell</a>
+          <a class="nav-link" href="{{ url_for('buy_sell') }}">Buy & Sell</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
         </li>
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Account
@@ -40,10 +42,10 @@
             <li><a class="dropdown-item" href="{{ url_for('withdrawDeposit') }}">Withdraw/Deposit</a></li>
             <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{{ url_for('logout') }}">log out</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log out</a></li>
           </ul>
         </li>
-        </ul>
+      </ul>
     </div>
   </div>
 </nav>
