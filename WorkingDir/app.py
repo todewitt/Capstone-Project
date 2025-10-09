@@ -51,7 +51,7 @@ class Stock(db.Model):
 class MarketSchedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # 0 = monday 6 = sunday 
-    day_of_week = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    day_of_week = db.Column(db.Integer, unique=True, nullable=False)
     open_time = db.Column(db.Time, nullable=False)
     close_time = db.Column(db.Time, nullable=False)
 
@@ -67,21 +67,28 @@ with app.app_context():
 
 # Function sets a time zone, defines when Market starts and ends. 
 def is_market_open():
+        #sets time zone 
         tz = pytz.timezone('US/Eastern')
         now = datetime.datetime.now(tz)
         today_date = now.date()
+        #pulls info from market override table, if it matches todays date 
         override = MarketOverride.query.filter_by(override_date=today_date).first()
+        #if an override exists then it uses the over ride times
         if override:
             start_market = now.replace(hour=override.open_time.hour, minute=override.open_time.minute, second=0)
             end_market = now.replace(hour=override.close_time.hour, minute=override.close_time.minute, second=0)
+            #if the open time is = to the close time then the market is just closed for the day 
             if override.open_time == override.close_time:
                 return False
             return start_market <= now <= end_market
         
         weekday = now.weekday() # 0 = monday 
+        #pulls info from market schedule table, pulling only data from specifc day of the week 
         schedule = MarketSchedule.query.filter_by(day_of_week=weekday).first()
+        #if there is no schedule set then the market is closed 
         if not schedule:
             return False
+        #pulls the date and time right now and replaces hours and minutes with data from table 
         start_market = now.replace(hour=schedule.open_time.hour, minute=schedule.open_time.minute, second=0)
         end_market = now.replace(hour=schedule.close_time.hour, minute=schedule.close_time.minute, second=0)
         return start_market <= now <= end_market 
@@ -315,6 +322,7 @@ def admin_dashboard():
     today_date = datetime.datetime.now(tz).date()
 
     if request.method == 'POST':
+        #forms in admin dashboard have "names" that are set to add_stock etc..
         if 'add_stock' in request.form:
             stock_symbol = request.form['stock_symbol'].upper()
             name = request.form['name']
@@ -340,6 +348,7 @@ def admin_dashboard():
                 flash(f'Error creating stock: {str(e)}', 'danger')
                 return redirect(url_for('admin_dashboard'))
         elif 'update_schedule' in request.form:
+            #loops through all days of the week and 
             for day in range(7):
                 open_time_str = request.form.get(f'open_time_{day}')
                 close_time_str = request.form.get(f'close_time_{day}')
