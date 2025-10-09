@@ -101,7 +101,7 @@ def login():
             flash('Login successful!', 'Success')
             return redirect(url_for('dashboard'))
         else:
-            flash('Invalid username or password', 'error')
+            flash('Invalid username or password', 'danger')
             return redirect(url_for('login'))
         
      return render_template("login.html")
@@ -119,7 +119,7 @@ def buy_sell():
 @app.route('/buy', methods=['POST'])
 def buy():
     if not is_market_open():
-        flash('The Market is closed at the moment.' \
+        flash('The Market is closed at the moment.'\
         'Please Try again later.')
         return redirect(url_for('buy_sell'))
     stock_symbol = request.form['stock_symbol'].upper()
@@ -127,18 +127,18 @@ def buy():
     user_id = session['user_id']
     user = User.query.get(user_id)
     if not user:
-        flash('User not found.', 'error')
+        flash('User not found.', 'danger')
         return redirect(url_for('buy_sell'))
     
     # Check if stock exists
     stock = Stock.query.filter_by(stock_symbol=stock_symbol).first()
     if not stock:
-        flash('Stock not available.', 'error')
+        flash('Stock not available.', 'danger')
         return redirect(url_for('buy_sell'))
     
     # Check if enough quantity available
     if stock.quantity < quantity:
-        flash('Stock sold out.', 'error')
+        flash('Stock sold out.', 'danger')
         return redirect(url_for('buy_sell'))
     
     try:
@@ -160,7 +160,7 @@ def buy():
         return redirect(url_for('portfolio'))
     except Exception as e:
         db.session.rollback()
-        flash(f'Error placing order: {str(e)}', 'error')
+        flash(f'Error placing order: {str(e)}', 'danger')
         return redirect(url_for('buy_sell'))
 
 @app.route('/sell', methods=['POST'])
@@ -175,13 +175,13 @@ def sell():
     user_id = session['user_id']
     user = User.query.get(user_id)
     if not user:
-        flash('User not found.', 'error')
+        flash('User not found.', 'danger')
         return redirect(url_for('buy_sell'))
     
     # Check if stock is in stock
     stock = Stock.query.filter_by(stock_symbol=stock_symbol).first()
     if not stock:
-        flash('Stock not found.', 'error')
+        flash('Stock not found.', 'danger')
         return redirect(url_for('buy_sell'))
     
     # Check if user has enough shares to sell
@@ -193,7 +193,7 @@ def sell():
             assets[order.stock_symbol] = assets.get(order.stock_symbol, 0) - order.quantity
     
     if assets.get(stock_symbol, 0) < quantity:
-        flash('You do not have enough shares to sell.', 'error')
+        flash('You do not have enough shares to sell.', 'danger')
         return redirect(url_for('buy_sell'))
     
     try:
@@ -214,7 +214,7 @@ def sell():
         return redirect(url_for('portfolio'))
     except Exception as e:
         db.session.rollback()
-        flash(f'Error placing sell order: {str(e)}', 'error')
+        flash(f'Error placing sell order: {str(e)}', 'danger')
         return redirect(url_for('buy_sell'))
 
 @app.route("/contact")
@@ -239,7 +239,7 @@ def withdrawDeposit():
 def orderHistory():
     user_id = session.get('user_id')
     if not user_id:
-        flash('User not found.', 'error')
+        flash('User not found.', 'danger')
         return redirect(url_for('login'))
     user = User.query.get_or_404(user_id)
     return render_template('order-history.html', user=user)
@@ -248,7 +248,7 @@ def orderHistory():
 def portfolio():
     user_id = session.get('user_id')
     if not user_id:
-        flash('User not found.', 'error')
+        flash('User not found.', 'danger')
         return redirect(url_for('login'))
     user = User.query.get_or_404(user_id)
     assets = {}
@@ -284,7 +284,7 @@ def create_account():
         admin = request.form['admin']
         
         if not username or not email or not firstName or not lastName or not password:
-            flash('Please fill in all fields', 'error')
+            flash('Please fill in all fields', 'danger')
             return redirect(url_for('create_account'))
         
         try:
@@ -294,7 +294,7 @@ def create_account():
             flash('User added successfully!', 'success')
             return redirect(url_for('create_account'))
         except Exception as e:
-            flash(f'Error adding user: {str(e)}', 'error')
+            flash(f'Error adding user: {str(e)}', 'danger')
             return redirect(url_for('create_account'))
     
     return render_template('create-account.html')
@@ -303,12 +303,12 @@ def create_account():
 def admin_dashboard():
     user_id = session.get('user_id')
     if not user_id:
-        flash('Please log in with an admin account.', 'error')
+        flash('Please log in with an admin account.', 'danger')
         return redirect(url_for('login'))
     
     user = User.query.get(user_id)
     if user.admin != 'y':
-        flash('User is not logged in as an admin.', 'error')
+        flash('User is not logged in as an admin.', 'danger')
         return redirect(url_for('dashboard'))
     
     tz = pytz.timezone('US/Eastern')
@@ -322,7 +322,7 @@ def admin_dashboard():
             quantity = request.form['quantity']
         
             if not stock_symbol or not name or not price_per_share or not quantity:
-                flash('Please fill in all fields', 'error')
+                flash('Please fill in all fields', 'danger')
                 return redirect(url_for('admin_dashboard'))
             
             try:
@@ -337,7 +337,7 @@ def admin_dashboard():
                 flash('Stock created successfully!', 'success')
                 return redirect(url_for('admin_dashboard'))
             except Exception as e:
-                flash(f'Error creating stock: {str(e)}', 'error')
+                flash(f'Error creating stock: {str(e)}', 'danger')
                 return redirect(url_for('admin_dashboard'))
         elif 'update_schedule' in request.form:
             for day in range(7):
