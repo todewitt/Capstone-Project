@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import datetime, pytz
 from flask_sqlalchemy import SQLAlchemy
+import threading, time, random
 
 app = Flask(__name__)
 
@@ -60,6 +61,28 @@ class MarketOverride(db.Model):
     override_date = db.Column(db.Date, unique=True, nullable=False)
     open_time = db.Column(db.Time, nullable=False)
     close_time = db.Column(db.Time, nullable=False)
+
+# Function to randomly update stock prices in a background thread
+def update_stock_prices():
+    with app.app_context():
+        while True:
+            try:
+                stocks = Stock.query.all()
+                for stock in stocks:
+                    # Generate a random change percentage (between -10% and +10%)
+                    change_percent = random.uniform(-0.1, 0.1)
+                    
+                    new_price = stock.price_per_share * (1 + change_percent)
+                    
+                    stock.price_per_share = max(0.01, round(new_price, 2))
+                
+                db.session.commit()
+                
+            except Exception as e:
+                db.session.rollback()
+            
+            # Wait for 60 seconds before the next update
+            time.sleep(60)
 
 # Create tables
 with app.app_context():
@@ -389,6 +412,10 @@ def admin_dashboard():
     todays_override = MarketOverride.query.filter_by(override_date=today_date).first()
 
     return render_template('admin-dashboard.html', schedule_dict=schedule_dict, days=days, todays_override=todays_override, today_string=today_date.strftime('%A, %B %d'))
+
+# Start the price update thread
+price_thread = threading.Thread(target=update_stock_prices, daemon=True)
+price_thread.start()
 
 if __name__ == '__main__':
     app.run(debug=True)
