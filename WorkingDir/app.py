@@ -21,6 +21,7 @@ class User(db.Model):
     lastName = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
     admin = db.Column(db.String(2))
+    balance = db.Column(db.Float, default=0.0)
 
     orders = db.relationship('Order', backref='user', lazy=True)
 
@@ -263,7 +264,30 @@ def logout():
 
 @app.route("/withdraw-deposit")
 def withdrawDeposit():
-    return render_template("withdraw-deposit.html")
+    user_id = session.get('user_id')
+    user = User.query.get_or_404(user_id)
+# Query database for the user and add and remove fund from their balance.
+    if request.method == 'POST':
+        if 'deposit' in request.form:
+            amount = float(request.form['amount'])
+            if amount > 0:
+                user.balance += amount
+                db.session.commit()
+                flash('Your Deposit is Completed')
+            else:
+                flash('The Deposit amount has to be Positive.')
+            return redirect(url_for(withdrawDeposit))
+        elif 'withdraw' in request.form:
+            amount = float(request.form['amount'])
+            if amount > 0:
+                if user.balance >= amount:
+                    user.balance -= amount
+                    db.session.commit()
+                    flash('Your Withdrawal was Successful')
+                else:
+                    flash('Insufficient Funds')
+                return redirect(url_for('withdrawDeposit'))
+    return render_template('withdraw-deposit.html', user=user)    
 
 @app.route('/order-history')
 def orderHistory():
