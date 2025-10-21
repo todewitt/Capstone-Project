@@ -262,32 +262,45 @@ def logout():
     flash('Logout Successfull')
     return redirect(url_for('login'))
 
-@app.route("/withdraw-deposit")
+@app.route("/withdraw-deposit", methods=['GET', 'POST'])
 def withdrawDeposit():
     user_id = session.get('user_id')
     user = User.query.get_or_404(user_id)
-# Query database for the user and add and remove fund from their balance.
     if request.method == 'POST':
         if 'deposit' in request.form:
-            amount = float(request.form['amount'])
+            try:
+                amount = float(request.form['amount'])
+            except ValueError:
+                flash('Invalid amount entered.', 'danger')
+                return redirect(url_for('withdrawDeposit'))
+                
             if amount > 0:
                 user.balance += amount
                 db.session.commit()
-                flash('Your Deposit is Completed')
+                flash('Your Deposit is Completed', 'success')
             else:
-                flash('The Deposit amount has to be Positive.')
-            return redirect(url_for(withdrawDeposit))
+                flash('The Deposit amount has to be Positive.', 'danger')
+            return redirect(url_for('withdrawDeposit')) 
+            
         elif 'withdraw' in request.form:
-            amount = float(request.form['amount'])
+            try:
+                amount = float(request.form['amount'])
+            except ValueError:
+                flash('Invalid amount entered.', 'danger')
+                return redirect(url_for('withdrawDeposit'))
+                
             if amount > 0:
                 if user.balance >= amount:
                     user.balance -= amount
                     db.session.commit()
-                    flash('Your Withdrawal was Successful')
+                    flash('Your Withdrawal was Successful', 'success')
                 else:
-                    flash('Insufficient Funds')
-                return redirect(url_for('withdrawDeposit'))
-    return render_template('withdraw-deposit.html', user=user)    
+                    flash('Insufficient Funds', 'danger')
+            else:
+                flash('The Withdrawal amount has to be Positive.', 'danger')
+            return redirect(url_for('withdrawDeposit'))
+            
+    return render_template('withdraw-deposit.html', user=user)  
 
 @app.route('/order-history')
 def orderHistory():

@@ -1,23 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Withdraw-Deposit{% endblock %}
+{% block title %}Withdraw/Deposit{% endblock %}
 {% block content %}
 <h1 class="text-white">Withdraw and Deposit Cash</h1>
-<p class="text-white">This is where someone will be able to deposit cash, they will be able to select an account, and then select where the money is going, and then how much<br>
-Since we are not using real money this can be done with a simple form</p>
-<select class="form-select" aria-label="Default select example">
-  <option selected>Select Account</option>
-  <option value="1">Stock account</option>
-  <option value="2">Bank account</option>
-</select>
-<p class="text-white text-center">There will be an arrow showing direction of transfer here</p>
-<select class="form-select" aria-label="Default select example">
-  <option selected>Select Account</option>
-  <option value="1">Stock account</option>
-  <option value="2">Bank account</option>
-</select>
-<div class="input-group mb-3">
-  <span class="input-group-text">$</span>
-  <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-  <span class="input-group-text">.00</span>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card bg-dark text-white p-4 mb-4">
+    <h3 class="mb-3">Current Cash Balance</h3>
+    <p class="fs-4">${{ "%.2f"|format(user.balance) }}</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card bg-dark text-white p-4 mb-4">
+            <h3 class="mb-3">Deposit Funds (Into Stock Account)</h3>
+            <form method="POST" action="{{ url_for('withdrawDeposit') }}">
+                <div class="mb-3">
+                    <label for="deposit_amount" class="form-label">Amount ($)</label>
+                    <input type="number" step="0.01" min="0.01" class="form-control" id="deposit_amount" name="amount" required>
+                </div>
+                <button type="submit" name="deposit" class="btn btn-success w-100">Deposit</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card bg-dark text-white p-4 mb-4">
+            <h3 class="mb-3">Withdraw Funds (From Stock Account)</h3>
+            <form method="POST" action="{{ url_for('withdrawDeposit') }}">
+                <div class="mb-3">
+                    <label for="withdraw_amount" class="form-label">Amount ($)</label>
+                    <input type="number" step="0.01" min="0.01" class="form-control" id="withdraw_amount" name="amount" required>
+                </div>
+                <button type="submit" name="withdraw" class="btn btn-danger w-100">Withdraw</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3 class="text-white">Trade Stocks</h3>
+    <a href="{{ url_for('buy_sell') }}" class="btn btn-primary">Go to Buy & Sell</a>
 </div>
 {% endblock %}
