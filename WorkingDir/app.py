@@ -172,6 +172,11 @@ def buy():
         flash('Stock sold out.', 'danger')
         return redirect(url_for('buy_sell'))
     
+    total_cost = quantity * stock.price_per_share
+    if user.balance < total_cost:
+        flash('Insufficient funds.', 'danger')
+        return redirect(url_for('buy_sell'))
+    
     try:
         new_order = Order(
             user_id=user.id,
@@ -181,7 +186,7 @@ def buy():
             price_per_share=stock.price_per_share,  # Use current stock price
 
         )
-        
+        user.balance -= total_cost
         # Update stock quantity
         stock.quantity -= quantity
         
@@ -235,6 +240,8 @@ def sell():
             quantity=quantity,
             price_per_share=stock.price_per_share,
         )
+        total_sale_value = quantity * stock.price_per_share
+        user.balance += total_sale_value
         
         # Update stock quantity and add back to available stocks
         stock.quantity += quantity
