@@ -15,7 +15,7 @@
     <div class="col-md-6">
         <div class="card bg-dark text-white p-4 mb-4">
             <h3 class="mb-3">Buy Stocks</h3>
-            <form method="POST" action="{{ url_for('buy') }}">
+            <form method="POST" action="{{ url_for('buy') }}" onsubmit="return confirm('Are you sure you want to place this order?');">
                 <div class="mb-3">
                     <label for="buy_symbol" class="form-label">Stock Symbol</label>
                     <input type="text" class="form-control" id="buy_symbol" name="stock_symbol" required>
@@ -32,7 +32,7 @@
     <div class="col-md-6">
         <div class="card bg-dark text-white p-4 mb-4">
             <h3 class="mb-3">Sell Stocks</h3>
-            <form method="POST" action="{{ url_for('sell') }}">
+            <form method="POST" action="{{ url_for('sell') }}" onsubmit="return confirm('Are you sure you want to place this order?');">
                 <div class="mb-3">
                     <label for="sell_symbol" class="form-label">Stock Symbol</label>
                     <input type="text" class="form-control" id="sell_symbol" name="stock_symbol" required>
