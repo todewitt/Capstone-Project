@@ -184,6 +184,7 @@ def buy():
         
         # Update stock quantity
         stock.quantity -= quantity
+        user.balance -= quantity * stock.price_per_share
         
         db.session.add(new_order)
         db.session.commit()
@@ -238,6 +239,7 @@ def sell():
         
         # Update stock quantity and add back to available stocks
         stock.quantity += quantity
+        user.balance += quantity * stock.price_per_share
         
         db.session.add(new_order)
         db.session.commit()
