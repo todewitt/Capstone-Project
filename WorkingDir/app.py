@@ -189,7 +189,7 @@ def buy():
         user.balance -= total_cost
         # Update stock quantity
         stock.quantity -= quantity
-        user.balance -= quantity * stock.price_per_share
+        user.balance -= total_cost
         
         db.session.add(new_order)
         db.session.commit()
@@ -243,10 +243,11 @@ def sell():
         )
         total_sale_value = quantity * stock.price_per_share
         user.balance += total_sale_value
+      
         
         # Update stock quantity and add back to available stocks
         stock.quantity += quantity
-        user.balance += quantity * stock.price_per_share
+        user.balance += total_sale_value
         
         db.session.add(new_order)
         db.session.commit()
@@ -434,21 +435,41 @@ def admin_dashboard():
                     schedule.close_time = datetime.time(0 , 0)
             flash('market schedule updated', 'success')
         elif 'manual_override' in request.form:
+            #Get a the override date from form
+            override_date_str = request.form.get('override_date') 
             open_time_str = request.form.get('override_open_time')
             close_time_str = request.form.get('override_close_time')
             is_closed_today = request.form.get('is_closed_today')
-            override = MarketOverride.query.filter_by(override_date=today_date).first()
+
+            if not override_date_str:
+                flash('Select a date to override', 'danger')
+                return redirect(url_for('admin_dashboard'))
+            try:
+                override_date = datetime.datetime.strptime(override_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                flash('Invalid date format', 'danger')
+                return redirect(url_for('admin_dashboard'))
+            
+            override = MarketOverride.query.filter_by(override_date=override_date).first()
+
             if not override:
-                override = MarketOverride(override_date=today_date)
+                override = MarketOverride(override_date=override_date)
                 db.session.add(override)
             if is_closed_today:
                 override.open_time = datetime.time(0, 0)
                 override.close_time = datetime.time(0, 0)
-                flash('Market has been closed.', 'success')
+                flash(f'Market has been closed on {override_date.strftime("%B %d, %Y")}', 'success')
             else:
-                override.open_time = datetime.datetime.strptime(open_time_str, '%H:%M').time()
-                override.close_time = datetime.datetime.strptime(close_time_str, '%H:%M').time()
-                flash('Regular hours have been overridden', 'danger')
+               if not open_time_str or not close_time_str:
+                     flash('Please provide both open and close times for the override.', 'danger')
+                     return redirect(url_for('admin_dashboard'))
+               try:
+                    override.open_time = datetime.datetime.strptime(open_time_str, '%H:%M').time()
+                    override.close_time = datetime.datetime.strptime(close_time_str, '%H:%M').time()
+                    flash(f'Market hours overridden for {override_date.strftime("%m-%d-%Y")}.', 'success')
+               except ValueError:
+                    flash('Invalid time format.', 'danger')
+                    return redirect(url_for('admin_dashboard'))
 
         db.session.commit()
         return redirect(url_for('admin_dashboard'))
