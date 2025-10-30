@@ -6,7 +6,7 @@ import threading, time, random
 app = Flask(__name__)
 
 # database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost/capstone'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:password@capstone.c61ga0wwglt7.us-east-1.rds.amazonaws.com/capstone'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key'
 
