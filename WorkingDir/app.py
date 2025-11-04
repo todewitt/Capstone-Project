@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import datetime, pytz
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 import threading, time, random
 
 app = Flask(__name__)
@@ -11,6 +12,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key'
 
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 # DATABASE MODELS
 class User(db.Model):
@@ -19,7 +21,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     firstName = db.Column(db.String(120), nullable=False)
     lastName = db.Column(db.String(120), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.LargeBinary, nullable=False)
     admin = db.Column(db.String(2))
     balance = db.Column(db.Float, default=0.0)
 
@@ -46,6 +48,8 @@ class Stock(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price_per_share = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Float, nullable=False)
+    high_price = db.Column(db.Float, nullable=True)
+    low_price = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
         return f"<Stock {self.stock_symbol}>"
@@ -76,6 +80,12 @@ def update_stock_prices():
                     new_price = stock.price_per_share * (1 + change_percent)
                     
                     stock.price_per_share = max(0.01, round(new_price, 2))
+
+                    if stock.high_price is None or new_price > stock.high_price:
+                        stock.high_price = new_price
+
+                    if stock.low_price is None or new_price < stock.low_price:
+                        stock.low_price = new_price
                 
                 db.session.commit()
                 
@@ -125,9 +135,9 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(username=username).first()
         #If user exist store their id and move them to dashboard if not redirect them to login.
-        if user:
+        if user and bcrypt.check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!', 'Success')
             return redirect(url_for('dashboard'))
@@ -363,7 +373,8 @@ def create_account():
             return redirect(url_for('create_account'))
         
         try:
-            new_user = User(username=username, email=email, firstName=firstName, lastName=lastName, password=password, admin=admin)
+            hashed_password = bcrypt.generate_password_hash(password)
+            new_user = User(username=username, email=email, firstName=firstName, lastName=lastName, password=hashed_password, admin=admin)
             db.session.add(new_user)
             db.session.commit()
             flash('User added successfully!', 'success')

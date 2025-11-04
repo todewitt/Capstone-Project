@@ -11,6 +11,8 @@
                 <th>Symbol</th>
                 <th>Company Name</th>
                 <th>Price</th>
+                <th>High</th>
+                <th>Low</th>
                 <th>Available</th>
             </tr>
         </thead>
@@ -20,6 +22,8 @@
                 <td>{{ stock.stock_symbol }}</td>
                 <td>{{ stock.name }}</td>
                 <td>${{ "%.2f"|format(stock.price_per_share) }}</td>
+                <td>${{ "%.2f"|format(stock.high_price) if stock.high_price is not none else 'N/A'}}</td>
+                <td>${{ "%.2f"|format(stock.low_price) if stock.low_price is not none else 'N/A'}}</td>
                 <td>{{ stock.quantity }}</td>
             </tr>
             {% else %}
